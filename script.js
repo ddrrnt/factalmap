@@ -2,6 +2,7 @@ let zoom = 1;
 const ZOOM_SPEED = 0.1;
 
 function parseMarkdown(markdown) {
+    console.log("Parsing markdown:", markdown);
     const lines = markdown.split('\n');
     const root = { content: lines[0].replace('# ', ''), children: [] };
     let currentLevel1 = null;
@@ -20,6 +21,7 @@ function parseMarkdown(markdown) {
         }
     }
 
+    console.log("Parsed data:", root);
     return root;
 }
 
@@ -32,6 +34,7 @@ function createNode(content, level, id = '') {
 }
 
 function renderMindmap(data) {
+    console.log("Rendering mindmap with data:", data);
     const container = document.getElementById('mindmap-container');
     container.innerHTML = '';
 
@@ -73,9 +76,11 @@ function renderMindmap(data) {
     });
 
     rootNode.addEventListener('click', toggleLevel1Nodes);
+    console.log("Mindmap rendered");
 }
 
 function toggleChildren(node) {
+    console.log("Toggling children for node:", node);
     const children = node.querySelector(`.level-${parseInt(node.className.split('-')[1]) + 1}-container`);
     if (children) {
         children.style.display = children.style.display === 'none' ? 'grid' : 'none';
@@ -83,6 +88,7 @@ function toggleChildren(node) {
 }
 
 function toggleLevel1Nodes() {
+    console.log("Toggling level 1 nodes");
     const level1Nodes = document.querySelectorAll('.level-1');
     level1Nodes.forEach(node => {
         node.style.display = node.style.display === 'none' ? 'grid' : 'none';
@@ -133,11 +139,28 @@ function generatePNG() {
     });
 }
 
-document.getElementById('render-button').addEventListener('click', () => {
-    const markdown = document.getElementById('input-area').value;
-    const data = parseMarkdown(markdown);
-    renderMindmap(data);
-    setupZoom();
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded and parsed");
+    const renderButton = document.getElementById('render-button');
+    const generatePngButton = document.getElementById('generate-png');
+
+    if (renderButton) {
+        renderButton.addEventListener('click', () => {
+            console.log("Render button clicked");
+            const markdown = document.getElementById('input-area').value;
+            const data = parseMarkdown(markdown);
+            renderMindmap(data);
+            setupZoom();
+        });
+    } else {
+        console.error("Render button not found");
+    }
+
+    if (generatePngButton) {
+        generatePngButton.addEventListener('click', generatePNG);
+    } else {
+        console.error("Generate PNG button not found");
+    }
 });
 
-document.getElementById('generate-png').addEventListener('click', generatePNG);
+console.log("Script loaded");
